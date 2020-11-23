@@ -110,7 +110,7 @@ public class MainController {
                     case "employees":
                         if (!tryParseLong(filterValue)) {
                             return Response.status(400).build();
-                        } else if (Long.parseLong(filterValue) < 1) {
+                        } else if (Long.parseLong(filterValue) < 0) {
                             return Response.status(400).build();
                         }
                         break;

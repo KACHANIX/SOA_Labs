@@ -182,8 +182,7 @@ public class MainController {
             if (organizationModel.name == null || organizationModel.turnover == null || organizationModel.y == null ||
                     organizationModel.turnover < 1 || organizationModel.name.isEmpty() ||
                     organizationModel.type != null && (organizationModel.type > 4 || organizationModel.type < 0) ||
-                    organizationModel.employees != null && organizationModel.employees < 1
-            ) {
+                    organizationModel.employees != null && organizationModel.employees < 0) {
                 return Response.status(400).build();
             }
             repository.addNewOrganization(organizationModel.name, organizationModel.x, organizationModel.y, organizationModel.turnover, organizationModel.type, organizationModel.street, organizationModel.employees);

@@ -10,7 +10,7 @@ public class Organization {
     private Double annualTurnover; //Поле не может быть null, Значение поля должно быть больше 0
     private Entities.OrganizationType type; //Поле может быть null
     private Address postalAddress; //Поле может быть null
-    private long employees;
+    private Long employees;
 
     public Integer getId() {
         return id;
@@ -68,11 +68,11 @@ public class Organization {
         this.postalAddress = postalAddress;
     }
 
-    public long getEmployees() {
+    public Long getEmployees() {
         return employees;
     }
 
-    public void setEmployees(long employees) {
+    public void setEmployees(Long employees) {
         this.employees = employees;
     }
 }

@@ -42,7 +42,7 @@ public class OrganizationRepository {
         }
     }
 
-    public boolean addNewOrganization(String Name, Double x, Long y, Double annualTurnover, Short organizationType, String street, Long Employees) {
+    public boolean addNewOrganization(String Name, Double x, Long y, Double annualTurnover, Short organizationType, String street, Long employees) {
         try (PreparedStatement stmt = connection.prepareStatement(insert)) {
             stmt.setDouble(1, annualTurnover);
             stmt.setString(2, Name);
@@ -60,7 +60,11 @@ public class OrganizationRepository {
                 stmt.setDouble(4, x);
             }
             stmt.setString(6, street);
-            stmt.setLong(7, Employees);
+            if (employees == null) {
+                stmt.setNull(7, Types.BIGINT);
+            } else {
+                stmt.setLong(7, employees);
+            }
             stmt.execute();
             return true;
         } catch (SQLException e) {
@@ -68,7 +72,7 @@ public class OrganizationRepository {
         }
     }
 
-    public void updateOrganization(Integer id, String name, Double x, Long y, Double annualTurnover, String street, Short type, Long Employees) {
+    public void updateOrganization(Integer id, String name, Double x, Long y, Double annualTurnover, String street, Short type, Long employees) {
 
         try (PreparedStatement stmt = connection.prepareStatement("UPDATE \"Organization\" SET \"Name\"=?, x=?, y=?, \"AnnualTurnover\"=?, \"PostalAddress\"=?, \"OrganizationType\"=?, \"Employees\"=? WHERE \"Id\"=?")) {
             stmt.setString(1, name);
@@ -85,7 +89,11 @@ public class OrganizationRepository {
             } else {
                 stmt.setShort(6, type);
             }
-            stmt.setLong(7, Employees);
+            if (employees == null) {
+                stmt.setNull(7, Types.BIGINT);
+            } else {
+                stmt.setLong(7, employees);
+            }
             stmt.setInt(8, id);
             stmt.execute();
         } catch (SQLException e) {
@@ -258,9 +266,8 @@ public class OrganizationRepository {
 
             organization.setAnnualTurnover(resultSet.getDouble("AnnualTurnover"));
 
-
             Coordinates coordinates = new Coordinates();
-            coordinates.setX(resultSet.getDouble("x"));
+            coordinates.setX(resultSet.getObject("x") == null ? null : resultSet.getDouble("x"));
             coordinates.setY(resultSet.getLong("y"));
             organization.setCoordinates(coordinates);
 
@@ -272,11 +279,10 @@ public class OrganizationRepository {
                 organization.setType(null);
             }
 
-
             Address address = new Address();
             address.setStreet(resultSet.getString("PostalAddress"));
             organization.setPostalAddress(address);
-            organization.setEmployees(resultSet.getLong("Employees"));
+            organization.setEmployees(resultSet.getObject("Employees") == null ? null : resultSet.getLong("Employees"));
             organizationArrayList.add(organization);
         }
         return organizationArrayList;

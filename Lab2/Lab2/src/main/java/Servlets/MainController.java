@@ -1,175 +1,130 @@
 package Servlets;
 
+import Entities.Organization;
 import Entities.OrganizationModel;
-import Entities.Page;
+import Entities.OrganizationType;
+import com.google.gson.Gson;
+
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import java.net.URLDecoder;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.net.*;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
-import static Utils.Utils.*;
-
-@Path("/organizations")
+@Path("/orgmanager/")
 public class MainController {
-    public MainController() {
 
-    }
+    private HttpClient client = HttpClient.newHttpClient();
+    private String baseAddress = "http://localhost:8080/unnamed/organizations";
+    private Gson g = new Gson();
 
+    @Path("/fire/all/{id}")
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response get(@Encoded @QueryParam("sortBy") String sortBy,
-                        @Encoded @QueryParam("filterBy") String filterBy,
-                        @Encoded @QueryParam("page") String page,
-                        @Context UriInfo uriInfo) {
-        String[] tmp = null;
-        Map<String, String> filters = null;
-        Map<String, String> sorts = null;
-        Page pagination = null;
-        long mustBe = 0;
-        long count = 0;
-        if (filterBy != null) {
-            filters = new LinkedHashMap<>();
-            try {
-                tmp = filterBy.split(",");
-            } catch (Exception e) {
-                return Response.status(400).build();
-
-            }
-            String filterName;
-            String filterValue;
-            mustBe = filterBy.chars().filter(ch -> ch == ',').count();
-            for (String filterStr : tmp) {
-                try {
-                    filterName = URLDecoder.decode(filterStr.substring(0, filterStr.indexOf('!')), "UTF-8");
-                    filterValue = URLDecoder.decode(filterStr.substring(filterStr.indexOf('!') + 1), "UTF-8");
-                } catch (Exception e) {
-                    return Response.status(400).build();
-                }
-                if (!fields.contains(filterName)) {
-                    return Response.status(400).build();
-                }
-                switch (filterName) {
-                    case "id":
-                        if (!tryParseInt(filterValue)) {
-                            return Response.status(400).build();
-                        } else if (Integer.parseInt(filterValue) <= 0) {
-                            return Response.status(400).build();
-                        }
-                        break;
-                    case "name":
-                    case "date":
-                        if (filterValue.isEmpty()) {
-                            return Response.status(400).build();
-                        }
-                        break;
-                    case "turnover":
-                        if (!tryParseDouble(filterValue)) {
-                            return Response.status(400).build();
-                        } else if (Double.parseDouble(filterValue) <= 0) {
-                            return Response.status(400).build();
-                        }
-                        break;
-                    case "x":
-                        if (!tryParseDouble(filterValue)) {
-                            return Response.status(400).build();
-                        }
-                        break;
-                    case "y":
-                        if (!tryParseLong(filterValue)) {
-                            return Response.status(400).build();
-                        }
-                        break;
-                    case "type":
-                        if (!tryParseShort(filterValue)) {
-                            return Response.status(400).build();
-                        }
-                    case "street":
-                        if (filterValue.isEmpty()) {
-                            return Response.status(400).build();
-                        }
-                        break;
-                }
-                filters.put(filterName, filterValue);
-                count++;
-            }
-            if (count <= mustBe) {
-                return Response.status(400).build();
-            }
+    public Response fireAll(@PathParam("id") int id) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(baseAddress + "/" + id))
+                .build();
+        HttpResponse<String> response = client.send(request,
+                HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() == 404) {
+            return Response.status(404).build();
         }
+        String asd = response.body();
+        Organization org = g.fromJson(asd, Organization.class);
+        org.setEmployees((long) 0);
+        OrganizationModel orgModel = new OrganizationModel(org.getName(),
+                org.getAnnualTurnover(), org.getCoordinates().getY(),
+                org.getCoordinates().getX(), org.getPostalAddress().getStreet(),
+                org.getType() == null ? null : (short) org.getType().ordinal(),
+                org.getEmployees());
+        request = HttpRequest.newBuilder()
+                .uri(URI.create(baseAddress + "/" + id))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(g.toJson(orgModel)))
+                .build();
+        response = client.send(request,
+                HttpResponse.BodyHandlers.ofString());
 
-        count = 0;
-        if (sortBy != null) {
-            sorts = new LinkedHashMap<>();
-            try {
-                tmp = sortBy.split(",");
-            } catch (Exception e) {
-                return Response.status(400).build();
-            }
-            String sortName;
-            String sortValue;
-            mustBe = sortBy.chars().filter(ch -> ch == ',').count();
-            for (String sortStr : tmp) {
-                try {
-                    sortName = URLDecoder.decode(sortStr.substring(0, sortStr.indexOf('!')), "UTF-8");
-                    sortValue = URLDecoder.decode(sortStr.substring(sortStr.indexOf('!') + 1), "UTF-8");
-                } catch (Exception e) {
-                    return Response.status(400).build();
-                }
-                if (!fields.contains(sortName) || !sortBys.contains(sortValue)) {
-                    return Response.status(400).build();
-                }
-                sorts.put(sortName, sortValue);
-                count++;
-            }
-            if (count <= mustBe) {
-                return Response.status(400).build();
-            }
-        }
-
-        if (page != null) {
-            try {
-                String t = URLDecoder.decode(page, "UTF-8");
-                tmp = new String[]{t.substring(0, t.indexOf('!')), t.substring(t.indexOf('!') + 1)};
-            } catch (Exception e) {
-                return Response.status(400).build();
-            }
-            if (tmp.length != 2) {
-                return Response.status(400).build();
-            }
-            if (tryParseInt(tmp[0]) && tryParseInt(tmp[1])) {
-                pagination = new Page();
-                pagination.PageSize = Integer.parseInt(tmp[0]);
-                pagination.PageNumber = Integer.parseInt(tmp[1]);
-            } else {
-                return Response.status(400).build();
-            }
-            if (pagination.PageSize < 1 && pagination.PageNumber < 0) {
-                return Response.status(400).build();
-            }
-        }
-        return Response.ok(repository.getChosenOrganizations(filters, sorts, pagination)).build();
+        return Response.status(response.statusCode()).build();
     }
 
-    @POST
-    public Response addOrganization(OrganizationModel organizationModel) {
-        if (organizationModel != null) {
-            if (organizationModel.name == null || organizationModel.turnover == null || organizationModel.y == null) {
-                return Response.status(400).build();
-            }
-            if (organizationModel.turnover < 1 || organizationModel.name.isEmpty()) {
-                return Response.status(400).build();
-            }
-            if (organizationModel.type != null && (organizationModel.type > 4 || organizationModel.type < 0)) {
-                return Response.status(400).build();
-            }
-            repository.addNewOrganization(organizationModel.name, organizationModel.x, organizationModel.y, organizationModel.turnover, organizationModel.type, organizationModel.street);
-            return Response.ok().build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
+
+    @Path("/acquise/{acquirer-id}/{acquired-id}")
+    @GET
+    public Response acquise(@PathParam("acquirer-id") int acquirerId, @PathParam("acquired-id") int acquiredId) throws IOException, InterruptedException {
+        if (acquiredId  == acquirerId){
+            return Response.status(400).build();
         }
+        System.out.println(acquirerId);
+        System.out.println(acquiredId);
+        // check acquirer to exist
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(baseAddress + "/" + acquirerId))
+                .build();
+
+        HttpResponse<String> acquirerResponse = client.send(request,
+                HttpResponse.BodyHandlers.ofString());
+        System.out.println(acquirerResponse.statusCode());
+
+        if (acquirerResponse.statusCode() != 200) {
+            return Response.status(acquirerResponse.statusCode()).build();
+        }
+
+        // check acquired to exist
+        request = HttpRequest.newBuilder()
+                .uri(URI.create(baseAddress + "/" + acquiredId))
+                .build();
+        HttpResponse<String> acquiredResponse = client.send(request,
+                HttpResponse.BodyHandlers.ofString());
+        System.out.println(acquiredResponse.statusCode());
+
+        if (acquiredResponse.statusCode() != 200) {
+            return Response.status(acquiredResponse.statusCode()).build();
+        }
+
+        // change acquirer's annualTurnover and employees
+        Organization acquirer = g.fromJson(acquirerResponse.body(), Organization.class);
+        Organization acquired = g.fromJson(acquiredResponse.body(), Organization.class);
+        Long employees = null;
+        if (acquirer.getEmployees() != null && acquired.getEmployees() != null) {
+            employees = acquirer.getEmployees() + acquired.getEmployees();
+        } else if (acquirer.getEmployees() != null && acquired.getEmployees() == null) {
+            employees = acquirer.getEmployees();
+        } else if (acquirer.getEmployees() == null && acquired.getEmployees() != null) {
+            employees = acquired.getEmployees();
+        }
+        OrganizationModel orgModel = new OrganizationModel(acquirer.getName(),
+                acquirer.getAnnualTurnover() + acquired.getAnnualTurnover(),
+                acquirer.getCoordinates().getY(),
+                acquirer.getCoordinates().getX(),
+                acquirer.getPostalAddress().getStreet(),
+                acquirer.getType() == null ? null : (short) acquirer.getType().ordinal(),
+                employees);
+        request = HttpRequest.newBuilder()
+                .uri(URI.create(baseAddress + "/" + acquirerId))
+                .header("Content-Type", "application/json")
+                .PUT(HttpRequest.BodyPublishers.ofString(g.toJson(orgModel)))
+                .build();
+        HttpResponse<String> response = client.send(request,
+                HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() != 200) {
+            return Response.status(response.statusCode()).build();
+        }
+
+        // delete acquired organization
+        request = HttpRequest.newBuilder()
+                .uri(URI.create(baseAddress + "/" + acquiredId))
+                .DELETE()
+                .build();
+        response = client.send(request,
+                HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() != 200) {
+            return Response.status(response.statusCode()).build();
+        }
+        return Response.ok().build();
     }
 }

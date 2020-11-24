@@ -1,14 +1,14 @@
 package Entities;
 
 public class Coordinates {
-    private double x;
+    private Double x;
     private Long y; //Поле не может быть null
 
-    public double getX() {
+    public Double getX() {
         return x;
     }
 
-    public void setX(double x) {
+    public void setX(Double x) {
         this.x = x;
     }
 

@@ -48,13 +48,14 @@ public class IdController {
         Organization organization = repository.getById(id);
         if (organization != null) {
             repository.deleteOrganization(id);
-            return Response.ok(organization).build();
+            return Response.ok().build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
 
     @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response updateOrganization(@PathParam("id") int id, OrganizationModel organizationModel) {
         if (id < 1) {
             return Response.status(400).build();

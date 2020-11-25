@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+<style>
+    body {
+        margin: 0;
+        color: #f0f1f5;
+        background-color: #282c34;
+        font-size: 25px;
+    }
+
+    .error {
+        color: #ff1b55;
+        display: none;
+    }
+
+    .success {
+        color: #00ff28;
+        display: none;
+    }
+
+    input {
+        text-align: center;
+    }
+
+    .extraBlock {
+        padding-top: 10px;
+        margin: 10px auto auto;
+        width: 600px;
+        border: 5px solid #4FC3F7;
+        border-radius: 20px;
+        padding-bottom: 5px;
+        text-align: center;
+    }
+</style>
+<script>
+    var fireAddress = "http://localhost:8081/unnamed/orgmanager/fire/all/";
+    var acquiseAddress = "http://localhost:8081/unnamed/orgmanager/acquise/";
+
+    function fire() {
+        document.getElementById("orgIncorrectError").style.display = "none";
+        document.getElementById("orgNotFoundError").style.display = "none";
+        document.getElementById("orgFireSuccess").style.display = "none";
+
+        var id = document.getElementById("orgId").value;
+        console.log(id);
+        var parsedId = parseInt(id);
+        console.log(parsedId);
+        if (isNaN(parsedId)) {
+            document.getElementById("orgIncorrectError").style.display = "block";
+            return;
+        }
+        if (parsedId < 1) {
+            document.getElementById("orgIncorrectError").style.display = "block";
+            return;
+        }
+
+        var xhr = new XMLHttpRequest();
+        var url = fireAddress + id;
+        xhr.open("GET", url);
+        xhr.onload = (e) => {
+            if (xhr.readyState == 4) {
+                console.log(xhr.responseText == '');
+                if (xhr.status == 200) {
+                    document.getElementById("orgFireSuccess").style.display = "block";
+                } else if (xhr.status == 404 && xhr.responseText == '') {
+                    document.getElementById("orgNotFoundError").style.display = "block";
+                } else if (xhr.status == 404 && xhr.responseText != '') {
+                    document.getElementById("orgIncorrectError").style.display = "block";
+                }
+            }
+        }
+        xhr.send();
+    }
+
+    function acquire() {
+        document.getElementById("acqIncorrectError").style.display = "none";
+        document.getElementById("acqNotFoundError").style.display = "none";
+        document.getElementById("acquireSuccess").style.display = "none";
+
+        var acquirerId = document.getElementById("acquirerId").value;
+        var parsedAcquirerId = parseInt(acquirerId);
+        var acquiredId = document.getElementById("acquiredId").value;
+        var parsedAcquirerId = parseInt(acquiredId);
+
+
+        if (isNaN(parsedAcquirerId) || isNaN(parsedAcquirerId)) {
+            document.getElementById("acqIncorrectError").style.display = "block";
+            return;
+        }
+        if (parsedAcquirerId < 1 || parsedAcquirerId < 1) {
+            document.getElementById("acqIncorrectError").style.display = "block";
+            return;
+        }
+
+        var xhr = new XMLHttpRequest();
+        var url = acquiseAddress+acquirerId+'/' + acquiredId;
+        xhr.open("GET", url);
+        xhr.onload = (e) => {
+            if (xhr.readyState == 4) {
+                console.log(xhr.responseText == '');
+                if (xhr.status == 200) {
+                    document.getElementById("acquireSuccess").style.display = "block";
+                } else if (xhr.status == 404 && xhr.responseText == '') {
+                    document.getElementById("acqNotFoundError").style.display = "block";
+                } else if (xhr.status == 404 && xhr.responseText != '') {
+                    document.getElementById("acqIncorrectError").style.display = "block";
+                }
+            }
+        }
+        xhr.send();
+    }
+</script>
+<div class="extraBlock">
+    <label for="orgId">Fire all organization's employees:</label><br/>
+    <input type="text" id="orgId" placeholder="ID"><br/>
+    <button onclick="fire()">FIRE</button>
+    <label id="orgIncorrectError" class="error">Your input is incorrect</label>
+    <label id="orgNotFoundError" class="error">Your organization doesn't exist</label>
+    <label id="orgFireSuccess" class="success">Success!</label>
+</div>
+<div class="extraBlock">
+    <label>Acquire</label><br/>
+    <label for="acquirerId">Acquirer</label><input type="text" id="acquirerId" placeholder="ACQUIRER ID"/><br/>
+    <label for="acquiredId">Acquired</label><input type="text" id="acquiredId" placeholder="ACQUIRED ID"/><br/>
+    <button onclick="acquire()">ACQUIRE</button>
+    <label id="acqIncorrectError" class="error">Your input is incorrect</label>
+    <label id="acqNotFoundError" class="error">One of your organizations doesn't exist</label>
+    <label id="acquireSuccess" class="success">Success!</label>
+</div>
+
+</body>
+
+</html>

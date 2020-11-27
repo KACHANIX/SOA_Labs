@@ -39,18 +39,16 @@
     }
 </style>
 <script>
-    var fireAddress = "http://localhost:8081/unnamed/orgmanager/fire/all/";
-    var acquiseAddress = "http://localhost:8081/unnamed/orgmanager/acquise/";
+    var fireAddress = "https://localhost:8445/unnamed/orgmanager/fire/all/";
+    var acquiseAddress = "https://localhost:8445/unnamed/orgmanager/acquise/";
 
-    function fire() {
+    function fire() { 
         document.getElementById("orgIncorrectError").style.display = "none";
         document.getElementById("orgNotFoundError").style.display = "none";
         document.getElementById("orgFireSuccess").style.display = "none";
 
         var id = document.getElementById("orgId").value;
-        console.log(id);
         var parsedId = parseInt(id);
-        console.log(parsedId);
         if (isNaN(parsedId)) {
             document.getElementById("orgIncorrectError").style.display = "block";
             return;
@@ -58,8 +56,7 @@
         if (parsedId < 1) {
             document.getElementById("orgIncorrectError").style.display = "block";
             return;
-        }
-
+        } 
         var xhr = new XMLHttpRequest();
         var url = fireAddress + id;
         xhr.open("GET", url);
@@ -88,12 +85,11 @@
         var acquiredId = document.getElementById("acquiredId").value;
         var parsedAcquirerId = parseInt(acquiredId);
 
-
-        if (isNaN(parsedAcquirerId) || isNaN(parsedAcquirerId)) {
+        if (isNaN(parsedAcquirerId) || isNaN(acquiredId)) {
             document.getElementById("acqIncorrectError").style.display = "block";
             return;
         }
-        if (parsedAcquirerId < 1 || parsedAcquirerId < 1) {
+        if (parsedAcquirerId < 1 || acquiredId < 1) {
             document.getElementById("acqIncorrectError").style.display = "block";
             return;
         }

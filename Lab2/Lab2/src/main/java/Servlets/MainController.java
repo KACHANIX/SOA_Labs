@@ -10,7 +10,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.*;
 import java.net.*;
-import java.net.http.HttpClient;
 import java.util.stream.Collectors;
 
 @Path("/orgmanager/")

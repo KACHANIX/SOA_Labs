@@ -9,31 +9,31 @@ import java.util.Map;
 
 public class Utils {
 //
-//    public static String getDBString(){
-//        return "jdbc:postgresql://192.168.10.99:5432/studs";
-//    }
-//
-//    public static String getDBUser(){
-//        return "s242274";
-//    }
-//    public static String getDBUserPassword(){
-//        return "bld868";
-//    }
+    public static String getDBString(){
+        return "jdbc:postgresql://192.168.10.99:5432/studs";
+    }
+
+    public static String getDBUser(){
+        return "s242274";
+    }
+    public static String getDBUserPassword(){
+        return "bld868";
+    }
 
     public static ArrayList<String> fields = new ArrayList<String>(Arrays.asList("id", "name", "turnover", "x", "y", "street", "type", "date", "employees"));
     public static ArrayList<String> sortBys = new ArrayList<String>(Arrays.asList("ASC", "DESC"));
 
-    public static String getDBString() {
-        return "jdbc:postgresql://localhost:5432/ifmo";
-    }
-
-    public static String getDBUser() {
-        return "postgres";
-    }
-
-    public static String getDBUserPassword() {
-        return "1";
-    }
+//    public static String getDBString() {
+//        return "jdbc:postgresql://localhost:5432/ifmo";
+//    }
+//
+//    public static String getDBUser() {
+//        return "postgres";
+//    }
+//
+//    public static String getDBUserPassword() {
+//        return "1";
+//    }
 
     public static Map<String, String> splitQuery(String query) throws Exception {
         Map<String, String> query_pairs = new LinkedHashMap<String, String>();

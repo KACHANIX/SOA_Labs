@@ -1,7 +1,7 @@
 package Entities;
 
 public class Coordinates {
-    private Double x;
+    private double x;
     private Long y; //Поле не может быть null
 
     public Double getX() {

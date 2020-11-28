@@ -63,7 +63,7 @@ public class IdController {
         Organization organization = repository.getById(id);
         if (organization != null) {
             if (organizationModel.name == null || organizationModel.turnover == null || organizationModel.y == null ||
-                    organizationModel.turnover < 1 || organizationModel.name.isEmpty() ||
+                    organizationModel.turnover < 1 || organizationModel.name.isEmpty() || organizationModel.x == null||
                     organizationModel.type != null && (organizationModel.type > 4 || organizationModel.type < 0) ||
                     organizationModel.employees != null && organizationModel.employees < 0) {
                 return Response.status(400).build();

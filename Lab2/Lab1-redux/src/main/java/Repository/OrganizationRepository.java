@@ -54,11 +54,12 @@ public class OrganizationRepository {
                 stmt.setShort(3, organizationType);
             }
 
-            if (x == null) {
-                stmt.setNull(4, Types.DOUBLE);
-            } else {
-                stmt.setDouble(4, x);
-            }
+//            if (x == null) {
+//                stmt.setNull(4, Types.DOUBLE);
+//            } else {
+//                stmt.setDouble(4, x);
+//            }
+            stmt.setDouble(4, x);
             stmt.setString(6, street);
             if (employees == null) {
                 stmt.setNull(7, Types.BIGINT);
@@ -76,11 +77,13 @@ public class OrganizationRepository {
 
         try (PreparedStatement stmt = connection.prepareStatement("UPDATE \"Organization\" SET \"Name\"=?, x=?, y=?, \"AnnualTurnover\"=?, \"PostalAddress\"=?, \"OrganizationType\"=?, \"Employees\"=? WHERE \"Id\"=?")) {
             stmt.setString(1, name);
-            if (x == null) {
-                stmt.setNull(2, Types.DOUBLE);
-            } else {
-                stmt.setDouble(2, x);
-            }
+//            if (x == null) {
+//                stmt.setNull(2, Types.DOUBLE);
+//            } else {
+//                stmt.setDouble(2, x);
+//            }
+            stmt.setDouble(2, x);
+
             stmt.setLong(3, y);
             stmt.setDouble(4, annualTurnover);
             stmt.setString(5, street);
@@ -267,7 +270,8 @@ public class OrganizationRepository {
             organization.setAnnualTurnover(resultSet.getDouble("AnnualTurnover"));
 
             Coordinates coordinates = new Coordinates();
-            coordinates.setX(resultSet.getObject("x") == null ? null : resultSet.getDouble("x"));
+//            coordinates.setX(resultSet.getObject("x") == null ? null : resultSet.getDouble("x"));
+            coordinates.setX(resultSet.getDouble("x"));
             coordinates.setY(resultSet.getLong("y"));
             organization.setCoordinates(coordinates);
 

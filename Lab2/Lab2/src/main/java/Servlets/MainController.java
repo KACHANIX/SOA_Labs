@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
 import java.net.*;
@@ -26,7 +27,8 @@ public class MainController {
     private final Gson g = new Gson();
 
     @Path("/fire/all/{id}")
-    @GET
+    @POST
+//    @Produces(MediaType.TEXT_PLAIN)
     public Response fireAll(@PathParam("id") int id) throws IOException {
         javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(localhostAcceptedHostnameVerifier);
 
@@ -65,7 +67,7 @@ public class MainController {
 
 
     @Path("/acquise/{acquirer-id}/{acquired-id}")
-    @GET
+    @POST
     public Response acquise(@PathParam("acquirer-id") int acquirerId, @PathParam("acquired-id") int acquiredId) throws IOException, InterruptedException {
         javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(localhostAcceptedHostnameVerifier);
 

@@ -59,7 +59,7 @@
         } 
         var xhr = new XMLHttpRequest();
         var url = fireAddress + id;
-        xhr.open("GET", url);
+        xhr.open("POST", url);
         xhr.onload = (e) => {
             if (xhr.readyState == 4) {
                 console.log(xhr.responseText == '');
@@ -83,20 +83,20 @@
         var acquirerId = document.getElementById("acquirerId").value;
         var parsedAcquirerId = parseInt(acquirerId);
         var acquiredId = document.getElementById("acquiredId").value;
-        var parsedAcquirerId = parseInt(acquiredId);
+        var parsedAcquiredId = parseInt(acquiredId);
 
-        if (isNaN(parsedAcquirerId) || isNaN(acquiredId)) {
+        if (isNaN(parsedAcquirerId) || isNaN(parsedAcquiredId)) {
             document.getElementById("acqIncorrectError").style.display = "block";
             return;
         }
-        if (parsedAcquirerId < 1 || acquiredId < 1) {
+        if (parsedAcquirerId < 1 || parsedAcquiredId < 1) {
             document.getElementById("acqIncorrectError").style.display = "block";
             return;
         }
 
         var xhr = new XMLHttpRequest();
-        var url = acquiseAddress+acquirerId+'/' + acquiredId;
-        xhr.open("GET", url);
+        var url = acquiseAddress+parsedAcquirerId+'/' + parsedAcquiredId;
+        xhr.open("POST", url);
         xhr.onload = (e) => {
             if (xhr.readyState == 4) {
                 console.log(xhr.responseText == '');
@@ -105,6 +105,8 @@
                 } else if (xhr.status == 404 && xhr.responseText == '') {
                     document.getElementById("acqNotFoundError").style.display = "block";
                 } else if (xhr.status == 404 && xhr.responseText != '') {
+                    document.getElementById("acqIncorrectError").style.display = "block";
+                } else if (xhr.status == 400){
                     document.getElementById("acqIncorrectError").style.display = "block";
                 }
             }

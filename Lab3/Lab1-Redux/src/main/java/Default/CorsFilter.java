@@ -1,11 +1,14 @@
 package Default;
 
+import org.springframework.stereotype.Component;
+
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 
+@Component
 @Provider
 public class CorsFilter implements ContainerResponseFilter {
 

@@ -2,6 +2,8 @@ package Servlets;
 
 import Repository.OrganizationRepository;
 import ReturnableEntities.AverageAnnualTurnover;
+import org.springframework.stereotype.Component;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -11,6 +13,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 import static Utils.Utils.*;
+
+@Component
 @Path("/organizations/average-turnover")
 public class AverageController {
     private OrganizationRepository repository;

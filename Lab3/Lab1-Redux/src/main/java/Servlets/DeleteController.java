@@ -1,6 +1,8 @@
 package Servlets;
 
 import Repository.OrganizationRepository;
+import org.springframework.stereotype.Component;
+
 import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
@@ -9,6 +11,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 import static Utils.Utils.*;
+
+@Component
 @Path("/organizations/equal-turnover")
 public class DeleteController {
 

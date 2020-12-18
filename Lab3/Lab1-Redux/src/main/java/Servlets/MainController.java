@@ -3,6 +3,7 @@ package Servlets;
 import Entities.OrganizationModel;
 import Entities.Page;
 import Repository.OrganizationRepository;
+import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -16,7 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static Utils.Utils.*;
-
+@Component
 @Path("/organizations")
 public class MainController {
     private OrganizationRepository repository;

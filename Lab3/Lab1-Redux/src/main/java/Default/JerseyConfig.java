@@ -9,7 +9,7 @@ public class JerseyConfig extends ResourceConfig {
     public JerseyConfig()
     {
         register(CorsFilter.class);
-//        register(MyApplication.class);
+        register(MyApplication.class);
         register(MainController.class);
         register(IdController.class);
         register(DeleteController.class);

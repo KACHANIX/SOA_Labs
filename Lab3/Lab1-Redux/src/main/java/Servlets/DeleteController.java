@@ -12,7 +12,7 @@ import java.sql.DriverManager;
 
 import static Utils.Utils.*;
 
-@Component
+//@Component
 @Path("/organizations/equal-turnover")
 public class DeleteController {
 

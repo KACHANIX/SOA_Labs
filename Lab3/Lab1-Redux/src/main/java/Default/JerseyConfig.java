@@ -15,5 +15,6 @@ public class JerseyConfig extends ResourceConfig {
         register(DeleteController.class);
         register(CountController.class);
         register(AverageController.class);
+        register(CorsFilter.class);
     }
 }

@@ -17,7 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static Utils.Utils.*;
-@Component
+//@Component
 @Path("/organizations")
 public class MainController {
     private OrganizationRepository repository;
@@ -34,8 +34,8 @@ public class MainController {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response get(@Encoded @QueryParam("sortBy") String sortBy,
-                        @Encoded @QueryParam("filterBy") String filterBy,
+    public Response get( @QueryParam("sortBy") String sortBy,
+                        @QueryParam("filterBy") String filterBy,
                         @Encoded @QueryParam("page") String page,
                         @Context UriInfo uriInfo) {
         String[] tmp = null;

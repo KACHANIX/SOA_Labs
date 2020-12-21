@@ -13,7 +13,7 @@ import java.sql.DriverManager;
 
 import static Utils.Utils.*;
 
-@Component
+//@Component
 @Path("/organizations/{id}")
 public class IdController {
     private OrganizationRepository repository;

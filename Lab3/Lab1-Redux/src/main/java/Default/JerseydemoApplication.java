@@ -7,7 +7,9 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @EnableDiscoveryClient
 @SpringBootApplication
-public class JerseydemoApplication extends SpringBootServletInitializer {
+public class JerseydemoApplication
+        extends SpringBootServletInitializer
+{
 
 	public static void main(String[] args) {
         new JerseydemoApplication().configure(new SpringApplicationBuilder(JerseydemoApplication.class)).run(args);

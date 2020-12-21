@@ -14,7 +14,7 @@ import java.sql.DriverManager;
 
 import static Utils.Utils.*;
 
-@Component
+//@Component
 @Path("/organizations/average-turnover")
 public class AverageController {
     private OrganizationRepository repository;

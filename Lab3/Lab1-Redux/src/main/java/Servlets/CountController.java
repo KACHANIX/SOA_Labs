@@ -15,7 +15,7 @@ import java.sql.DriverManager;
 
 import static Utils.Utils.*;
 
-@Component
+//@Component
 @Path("/organizations/higher-turnovers")
 public class CountController {
     private OrganizationRepository repository;
@@ -33,6 +33,9 @@ public class CountController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getHigherTurnovers(@QueryParam("turnover") double turnover) {
+        if (turnover == Double.POSITIVE_INFINITY){
+            return Response.status(400).build();
+        }
         if (turnover < 1) {
             return Response.status(400).build();
         }

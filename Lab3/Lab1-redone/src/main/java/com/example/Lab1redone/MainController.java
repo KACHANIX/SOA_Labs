@@ -3,7 +3,6 @@ package com.example.Lab1redone;
 import Entities.OrganizationModel;
 import Entities.Page;
 import Repository.OrganizationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

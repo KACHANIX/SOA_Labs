@@ -49,8 +49,7 @@ public class MainController {
             checkLab1Running();
         } catch (Throwable ignored) {
             ignored.printStackTrace();
-            return Response.status(400).entity(ignored.getMessage()).build();
-
+            return Response.status(500).entity(ignored.getMessage()).build();
         }
         HttpsURLConnection con = (HttpsURLConnection) new URL(lab1Address + "/" + id).openConnection();
         con.setRequestMethod("GET");
@@ -90,6 +89,13 @@ public class MainController {
     @POST
     public Response acquise(@PathParam("acquirer-id") int acquirerId, @PathParam("acquired-id") int acquiredId) throws IOException, InterruptedException {
         javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(localhostAcceptedHostnameVerifier);
+
+        try {
+            checkLab1Running();
+        } catch (Throwable ignored) {
+            ignored.printStackTrace();
+            return Response.status(500).entity(ignored.getMessage()).build();
+        }
 
         if (acquiredId == acquirerId) {
             return Response.status(400).build();

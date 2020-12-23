@@ -5,11 +5,18 @@ import Entities.Organization;
 import Entities.OrganizationModel;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.gson.Gson;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.net.*;
 import java.util.stream.Collectors;
@@ -24,13 +31,14 @@ public class MainController {
         return defaultHostnameVerifier.verify(hostname, sslSession);
     };
 
-    private int chosen = 11;
     private String app11Address;
     private String app12Address;
-    private String lab1Address;
+    private static String lab1Address;
     private final String app11Name = "CLIENT";
     private final String app12Name = "CLIENT1";
     private final String eurekaAppsAddress = "http://localhost:8080/eureka/eureka/apps";
+    private final String eurekaAddress = "http://localhost:8080/eureka/";
+    //    private final String eurekaAppsAddress = "https://localhost:8443/eureka/eureka/apps";
     private final Gson g = new Gson();
 
     @Path("/fire/all/{id}")
@@ -158,79 +166,87 @@ public class MainController {
 
 
     private void checkLab1Running() throws Throwable {
-        if (lab1Address != null) {
-            // TODO: check if instance is up
-            HttpsURLConnection con = (HttpsURLConnection) new URL(lab1Address).openConnection();
-            con.setRequestMethod("GET");
-            con.connect();
-            String responseMessage = con.getResponseMessage();
-            if (responseMessage.contains("<html><head><title>Error</title></head><body>404 - Not Found</body></html>")) {
-                if (chosen == 11) {
-                    chosen = 12;
-                    lab1Address = app12Address;
-                } else if (chosen == 12) {
-                    chosen = 11;
+        int chosen = 11;
+
+
+//        if (lab1Address != null) {
+//            HttpsURLConnection con = (HttpsURLConnection) new URL(lab1Address).openConnection();
+//            con.setRequestMethod("GET");
+//            con.connect();
+//            int responseMessage = con.getResponseCode();
+//            if (responseMessage == 404) {
+//                if (chosen == 11) {
+//                    chosen = 12;
+//                    lab1Address = app12Address;
+//                } else if (chosen == 12) {
+//                    chosen = 11;
+//                    lab1Address = app11Address;
+//                }
+//            }
+//        } else {
+
+        // EXTRA request to let eureka update its xml page
+        HttpURLConnection con = (HttpURLConnection) new URL(eurekaAddress).openConnection();
+        con.setRequestMethod("GET");
+        con.connect();
+        con.disconnect();
+
+        Thread.sleep(500);
+
+        con = (HttpURLConnection) new URL(eurekaAppsAddress).openConnection();
+        con.setRequestMethod("GET");
+        con.connect();
+        String responseMessage = IOUtils.toString(con.getInputStream());
+        JAXBContext context = JAXBContext.newInstance(Applications.class);
+        Unmarshaller unmarshaller = context.createUnmarshaller();
+        Applications applications = (Applications) unmarshaller.unmarshal(new StringReader(responseMessage));
+        int apsCount = applications.application.size();
+
+        if (apsCount > 2 || apsCount == 0) {
+            throw new Throwable("There is incorrect number of apps");
+        }
+        if (apsCount == 1) {
+            switch (applications.application.get(0).name) {
+                case app11Name:
+                    app11Address = applications.application.get(0).instance.homePageUrl + "organizations";
                     lab1Address = app11Address;
-                }
+                    chosen = 11;
+                    break;
+                case app12Name:
+                    app12Address = applications.application.get(0).instance.homePageUrl + "organizations";
+                    lab1Address = app12Address;
+                    chosen = 12;
+                    break;
+                default:
+                    throw new Throwable("There is a stranger app");
             }
         } else {
-            HttpURLConnection con = (HttpURLConnection) new  URL(null,eurekaAppsAddress).openConnection();
-//            HttpsURLConnection con = (HttpsURLConnection) new URL(eurekaAppsAddress).openConnection();
-//            URL url = new URL(eurekaAppsAddress);
-//            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-            con.connect();
-            String responseMessage =  (new BufferedReader(new InputStreamReader(con.getInputStream()))).lines().collect(Collectors.joining());
-
-            XmlMapper xmlMapper = new XmlMapper();
-            Applications applications = xmlMapper.readValue(responseMessage, Applications.class);
-            int apsCount = applications.applications.size();
-
-            if (apsCount > 2 || apsCount == 0) {
-                throw new Throwable("There is incorrect number of apps");
+            switch (applications.application.get(0).name) {
+                case app11Name:
+                    app11Address = applications.application.get(0).instance.homePageUrl + "organizations";
+                    break;
+                case app12Name:
+                    app12Address = applications.application.get(0).instance.homePageUrl + "organizations";
+                    break;
+                default:
+                    throw new Throwable("There is a stranger app");
             }
-            if (apsCount == 1) {
-                switch (applications.applications.get(0).name) {
-                    case app11Name:
-                        app11Address = applications.applications.get(0).instance.homePageUrl;
-                        lab1Address = app11Address;
-                        chosen = 11;
-                        break;
-                    case app12Name:
-                        app12Address = applications.applications.get(0).instance.homePageUrl;
-                        lab1Address = app12Address;
-                        chosen = 12;
-                        break;
-                    default:
-                        throw new Throwable("There is a stranger app");
-                }
+            switch (applications.application.get(1).name) {
+                case app11Name:
+                    app11Address = applications.application.get(1).instance.homePageUrl + "organizations";
+                    break;
+                case app12Name:
+                    app12Address = applications.application.get(1).instance.homePageUrl + "organizations";
+                    break;
+                default:
+                    throw new Throwable("There is a stranger app");
+            }
+            if (chosen == 11) {
+                lab1Address = app11Address;
             } else {
-                switch (applications.applications.get(0).name) {
-                    case app11Name:
-                        app11Address = applications.applications.get(0).instance.homePageUrl;
-                        break;
-                    case app12Name:
-                        app12Address = applications.applications.get(0).instance.homePageUrl;
-                        break;
-                    default:
-                        throw new Throwable("There is a stranger app");
-                }
-                switch (applications.applications.get(1).name) {
-                    case app11Name:
-                        app11Address = applications.applications.get(1).instance.homePageUrl;
-                        break;
-                    case app12Name:
-                        app12Address = applications.applications.get(1).instance.homePageUrl;
-                        break;
-                    default:
-                        throw new Throwable("There is a stranger app");
-                }
-                if (chosen == 11) {
-                    lab1Address = app11Address;
-                } else {
-                    lab1Address = app12Address;
-                }
+                lab1Address = app12Address;
             }
         }
+//        }
     }
 }

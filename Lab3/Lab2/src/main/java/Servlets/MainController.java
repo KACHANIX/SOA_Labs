@@ -3,14 +3,8 @@ package Servlets;
 import Entities.Applications;
 import Entities.Organization;
 import Entities.OrganizationModel;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.gson.Gson;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.ws.rs.*;
@@ -38,7 +32,6 @@ public class MainController {
     private final String app12Name = "CLIENT1";
     private final String eurekaAppsAddress = "http://localhost:8080/eureka/eureka/apps";
     private final String eurekaAddress = "http://localhost:8080/eureka/";
-    //    private final String eurekaAppsAddress = "https://localhost:8443/eureka/eureka/apps";
     private final Gson g = new Gson();
 
     @Path("/fire/all/{id}")
@@ -172,7 +165,7 @@ public class MainController {
 
 
     private void checkLab1Running() throws Throwable {
-        int chosen = 11;
+        int chosen = 12;
 
 
 //        if (lab1Address != null) {
@@ -191,13 +184,15 @@ public class MainController {
 //            }
 //        } else {
 
-        // EXTRA request to let eureka update its xml page
-        HttpURLConnection con = (HttpURLConnection) new URL(eurekaAddress).openConnection();
-        con.setRequestMethod("GET");
-        con.connect();
-        con.disconnect();
 
-        Thread.sleep(500);
+        HttpURLConnection con;
+        // EXTRA request to let eureka update its xml page
+//        con = (HttpURLConnection) new URL(eurekaAddress).openConnection();
+//        con.setRequestMethod("GET");
+//        con.connect();
+//        con.disconnect();
+//
+//        Thread.sleep(500);
 
         con = (HttpURLConnection) new URL(eurekaAppsAddress).openConnection();
         con.setRequestMethod("GET");
@@ -247,9 +242,30 @@ public class MainController {
                 default:
                     throw new Throwable("There is a stranger app");
             }
+
+            // Sometimes there's a problem with eureka/apps doesnt updating its xml,
+            // so actually when one service is unregistered you will still see it there
             if (chosen == 11) {
+                try {
+                    con = (HttpURLConnection) new URL(app11Address).openConnection();
+                    con.setRequestMethod("GET");
+                    con.connect();
+
+                } catch (ConnectException exc) {
+                    lab1Address = app12Address;
+                    return;
+                }
                 lab1Address = app11Address;
             } else {
+                try {
+                    con = (HttpURLConnection) new URL(app12Address).openConnection();
+                    con.setRequestMethod("GET");
+                    con.connect();
+
+                } catch (ConnectException exc) {
+                    lab1Address = app11Address;
+                    return;
+                }
                 lab1Address = app12Address;
             }
         }

@@ -13,7 +13,19 @@ class FindOrganizations extends Component {
     }
 
     getById() {
-        var id = encodeURIComponent(document.getElementById("idGet").value);
+        var id = (document.getElementById("idGet").value);
+
+
+        var parsedId = parseInt(id);
+        if (isNaN(id)) {
+            document.getElementById("getIdIncorrectError").style.display = "block";
+            return;
+        }
+        if (parsedId < 1  ) {
+            document.getElementById("getIdIncorrectError").style.display = "block";
+            return;
+        }
+
         var xhr = new XMLHttpRequest();
         var url = GetServerUrl() + '/' + id
         xhr.open("GET", url);
@@ -329,6 +341,18 @@ class FindOrganizations extends Component {
 
 
         if (sizePage != '' && pagePage != '') {
+
+            var parsedSize = parseFloat(sizePage);
+            var parsedPage = parseFloat(pagePage);
+            if (isNaN(parsedSize) || isNaN(parsedPage)) {
+                document.getElementById("pageError").style.display = "block";
+                return;
+            }
+            if (parsedSize < 1  || parsedPage < 0) {
+                document.getElementById("pageError").style.display = "block";
+                return;
+            }
+
             url += sumCount > 0 ? '&page=' : '?page=';
             url += encodeURIComponent(sizePage) + '!' + encodeURIComponent(pagePage);
         } else if (sizePage != '' || pagePage != '') {
@@ -347,7 +371,7 @@ class FindOrganizations extends Component {
                         organizations: (JSON.parse(xhr.responseText))
                     });
 
-                } else if (xhr.status == 422) {
+                } else if (xhr.status == 400) {
                     document.getElementById("getError").style.display = "block";
                     this.setState({
                         organizations: []
@@ -371,6 +395,7 @@ class FindOrganizations extends Component {
                     <button onClick={this.getById}>Send request</button>
                     <label id="getIdSuccess" className="success">Success!</label>
                     <label id="getIdError" className="error">Server received incorrect data!</label>
+                    <label id="getIdIncorrectError" className="error">Your input is incorrect!</label>
                     <label id="getIdErrorId" className="error">You're trying to find a non-existing
                         organization!</label>
                 </div>
@@ -505,7 +530,7 @@ class FindOrganizations extends Component {
                            placeholder="Page Number"
                            min="0"/>
 
-                    <label id="pageError" className="error">Set page size and page number both!</label>
+                    <label id="pageError" className="error">Set page size and page number both correctly!</label>
                     <label id="getError" className="error">Server received incorrect data!</label>
                     <label id="filterError" className="error">One of filters has incorrect data!</label>
 

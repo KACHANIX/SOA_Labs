@@ -120,140 +120,177 @@ public class OrganizationRepository {
 
     public ArrayList<Organization> getChosenOrganizations(Map<String, String> filters, Map<String, String> sorts, Page pagination) {
         StringBuilder bld = new StringBuilder(defaultSelect);
-        try {
+        if (filters != null) {
+            bld.append(" WHERE ");
+            int i = 0;
+            if (filters.get("id") != null) {
+                bld.append("\"Id\"=? ");
+                i++;
+            }
+            if (filters.get("name") != null) {
+                if (i > 0) {
+                    bld.append(" AND ");
+                }
+                bld.append(" \"Name\"=? ");
+                i++;
+            }
+            if (filters.get("turnover") != null) {
+                if (i > 0) {
+                    bld.append(" AND ");
+                }
+                bld.append(" \"AnnualTurnover\"=?");
+                i++;
+            }
+            if (filters.get("date") != null) {
+                if (i > 0) {
+                    bld.append(" AND ");
+                }
+                bld.append(" \"CreationDate\"::text LIKE ? ");
+                i++;
+            }
+            if (filters.get("x") != null) {
+                if (i > 0) {
+                    bld.append(" AND ");
+                }
+                bld.append(" x=? ");
+                i++;
+            }
+            if (filters.get("y") != null) {
+                if (i > 0) {
+                    bld.append(" AND ");
+                }
+                bld.append(" y=? ");
+                i++;
+            }
+            if (filters.get("street") != null) {
+                if (i > 0) {
+                    bld.append(" AND ");
+                }
+                bld.append(" \"PostalAddress\"=? ");
+                i++;
+            }
+            if (filters.get("type") != null) {
+                if (i > 0) {
+                    bld.append(" AND ");
+                }
+                bld.append(" \"OrganizationType\"=? ");
+                i++;
+            }
+            if (filters.get("employees") != null) {
+                if (i > 0) {
+                    bld.append(" AND ");
+                }
+                bld.append(" \"Employees\"=? ");
+            }
+        }
+        if (sorts != null) {
+            bld.append(" ORDER BY ");
+            int i = 0;
+            if (sorts.get("id") != null) {
+                bld.append(" \"Id\" ").append(sorts.get("id"));
+                i++;
+            }
+            if (sorts.get("name") != null) {
+                if (i > 0) {
+                    bld.append(" , ");
+                }
+                bld.append(" \"Name\" ").append(sorts.get("name"));
+                i++;
+            }
+            if (sorts.get("turnover") != null) {
+                if (i > 0) {
+                    bld.append(" , ");
+                }
+                bld.append(" \"AnnualTurnover\" ").append(sorts.get("turnover"));
+                i++;
+            }
+            if (sorts.get("date") != null) {
+                if (i > 0) {
+                    bld.append(" , ");
+                }
+                bld.append(" \"CreationDate\" ").append(sorts.get("date"));
+                i++;
+            }
+            if (sorts.get("x") != null) {
+                if (i > 0) {
+                    bld.append(" , ");
+                }
+                bld.append(" x ").append(sorts.get("x"));
+                i++;
+            }
+            if (sorts.get("y") != null) {
+                if (i > 0) {
+                    bld.append(" , ");
+                }
+                bld.append(" y ").append(sorts.get("y"));
+                i++;
+            }
+            if (sorts.get("street") != null) {
+                if (i > 0) {
+                    bld.append(" , ");
+                }
+                bld.append(" \"PostalAddress\" ").append(sorts.get("street"));
+                i++;
+            }
+            if (sorts.get("type") != null) {
+                if (i > 0) {
+                    bld.append(" , ");
+                }
+                bld.append(" \"OrganizationType\" ").append(sorts.get("type"));
+                i++;
+            }
+            if (sorts.get("employees") != null) {
+                if (i > 0) {
+                    bld.append(" , ");
+                }
+                bld.append(" \"Employees\" ").append(sorts.get("employees"));
+            }
+        }
+
+        if (pagination != null) {
+            bld.append(" LIMIT ").append(pagination.PageSize).append(" offset ").append(pagination.PageNumber * pagination.PageSize);
+        }
+
+        bld.append(";");
+        try (PreparedStatement stmt = connection.prepareStatement(bld.toString())) {
             if (filters != null) {
-                bld.append(" WHERE ");
-                int i = 0;
+                int i = 1;
                 if (filters.get("id") != null) {
-                    bld.append("\"Id\"='").append(filters.get("id")).append("' ");
+                    stmt.setInt(i, Integer.parseInt(filters.get("id")));
                     i++;
                 }
                 if (filters.get("name") != null) {
-                    if (i > 0) {
-                        bld.append(" AND ");
-                    }
-                    bld.append(" \"Name\"='").append(filters.get("name").replace("'", "''")).append("' ");
+                    stmt.setString(i, filters.get("name"));
                     i++;
                 }
                 if (filters.get("turnover") != null) {
-                    if (i > 0) {
-                        bld.append(" AND ");
-                    }
-                    bld.append(" \"AnnualTurnover\"='").append(filters.get("turnover")).append("' ");
+                    stmt.setDouble(i, Double.parseDouble(filters.get("turnover")));
                     i++;
                 }
                 if (filters.get("date") != null) {
-                    if (i > 0) {
-                        bld.append(" AND ");
-                    }
-                    bld.append(" \"CreationDate\"::text LIKE '%").append(filters.get("date").replace("'", "''")).append("%' ");
+                    stmt.setString(i, filters.get("date"));
                     i++;
                 }
                 if (filters.get("x") != null) {
-                    if (i > 0) {
-                        bld.append(" AND ");
-                    }
-                    bld.append(" x='").append(filters.get("x")).append("' ");
+                    stmt.setDouble(i, Double.parseDouble(filters.get("x")));
                     i++;
                 }
                 if (filters.get("y") != null) {
-                    if (i > 0) {
-                        bld.append(" AND ");
-                    }
-                    bld.append(" y='").append(filters.get("y")).append("' ");
+                    stmt.setLong(i, Long.parseLong((filters.get("y"))));
                     i++;
                 }
                 if (filters.get("street") != null) {
-                    if (i > 0) {
-                        bld.append(" AND ");
-                    }
-                    bld.append(" \"PostalAddress\"='").append(filters.get("street").replace("'", "''")).append("' ");
+                    stmt.setString(i, filters.get("street"));
                     i++;
                 }
                 if (filters.get("type") != null) {
-                    if (i > 0) {
-                        bld.append(" AND ");
-                    }
-                    bld.append(" \"OrganizationType\"='").append(filters.get("type")).append("' ");
+                    stmt.setShort(i, Short.parseShort(filters.get("type")));
                     i++;
                 }
                 if (filters.get("employees") != null) {
-                    if (i > 0) {
-                        bld.append(" AND ");
-                    }
-                    bld.append(" \"Employees\"='").append(filters.get("employees")).append("' ");
+                    stmt.setLong(i, Long.parseLong((filters.get("employees"))));
                 }
             }
-            if (sorts != null) {
-                bld.append(" ORDER BY ");
-                int i = 0;
-                if (sorts.get("id") != null) {
-                    bld.append(" \"Id\" ").append(sorts.get("id"));
-                    i++;
-                }
-                if (sorts.get("name") != null) {
-                    if (i > 0) {
-                        bld.append(" , ");
-                    }
-                    bld.append(" \"Name\" ").append(sorts.get("name"));
-                    i++;
-                }
-                if (sorts.get("turnover") != null) {
-                    if (i > 0) {
-                        bld.append(" , ");
-                    }
-                    bld.append(" \"AnnualTurnover\" ").append(sorts.get("turnover"));
-                    i++;
-                }
-                if (sorts.get("date") != null) {
-                    if (i > 0) {
-                        bld.append(" , ");
-                    }
-                    bld.append(" \"CreationDate\" ").append(sorts.get("date"));
-                    i++;
-                }
-                if (sorts.get("x") != null) {
-                    if (i > 0) {
-                        bld.append(" , ");
-                    }
-                    bld.append(" x ").append(sorts.get("x"));
-                    i++;
-                }
-                if (sorts.get("y") != null) {
-                    if (i > 0) {
-                        bld.append(" , ");
-                    }
-                    bld.append(" y ").append(sorts.get("y"));
-                    i++;
-                }
-                if (sorts.get("street") != null) {
-                    if (i > 0) {
-                        bld.append(" , ");
-                    }
-                    bld.append(" \"PostalAddress\" ").append(sorts.get("street"));
-                    i++;
-                }
-                if (sorts.get("type") != null) {
-                    if (i > 0) {
-                        bld.append(" , ");
-                    }
-                    bld.append(" \"OrganizationType\" ").append(sorts.get("type"));
-                    i++;
-                }
-                if (sorts.get("employees") != null) {
-                    if (i > 0) {
-                        bld.append(" , ");
-                    }
-                    bld.append(" \"Employees\" ").append(sorts.get("employees"));
-                }
-            }
-
-            if (pagination != null) {
-                bld.append(" LIMIT ").append(pagination.PageSize).append(" offset ").append(pagination.PageNumber * pagination.PageSize);
-            }
-
-            bld.append(";");
-            PreparedStatement stmt = connection.prepareStatement(bld.toString());
             return getResult(stmt.executeQuery());
         } catch (SQLException e) {
             throw new RuntimeException(e);

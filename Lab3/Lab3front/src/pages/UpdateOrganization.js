@@ -20,6 +20,19 @@ class UpdateOrganization extends Component {
         var annualTurnover = document.getElementById("turnoverUpdate").value;
         var x = document.getElementById("xUpdate").value;
 
+
+        var parsedId = parseInt(id);
+
+        if (isNaN(id)) {
+            document.getElementById("updateErrorValid").style.display = "block";
+            return;
+        }
+        if (parsedId < 1  ) {
+            document.getElementById("updateErrorValid").style.display = "block";
+            return;
+        }
+
+
         console.log(id);
         console.log(name);
         console.log(y);
@@ -38,7 +51,7 @@ class UpdateOrganization extends Component {
         console.log(x);
         console.log(street);
         console.log(type);
-        var url = GetServerUrl() + "/" + encodeURIComponent(id);
+        var url = GetServerUrl() + "/" + (id);
         var jsonStr = '{';
         var count = 0;
         if (x != '') {

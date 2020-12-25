@@ -32,10 +32,19 @@ class Extras extends Component {
     }
 
     count() {
-        var annualTurnover = encodeURIComponent(document.getElementById("turnoverCount").value);
-
+        document.getElementById("countIncorrectError").style.display = "none";
+        var turnover = document.getElementById("turnoverCount").value;
+        var parsedTurnover = parseFloat(turnover);
+        if (isNaN(turnover)) {
+            document.getElementById("countIncorrectError").style.display = "block";
+            return;
+        }
+        if (parsedTurnover < 1  ) {
+            document.getElementById("countIncorrectError").style.display = "block";
+            return;
+        }
         var xhr = new XMLHttpRequest();
-        var params = '?turnover=' + annualTurnover;
+        var params = '?turnover=' + turnover;
         xhr.open("GET", GetServerUrl() + '/higher-turnovers' + params);
         xhr.onload = (e) => {
             if (xhr.readyState == 4) {
@@ -104,6 +113,7 @@ class Extras extends Component {
                     Organizations : <b id="countText"/>
                     <br/>
                     <label id="countSuccess" className="success">Success!</label>
+                    <label id="countIncorrectError" className="error">Your input is incorrect!</label>
                     <label id="countError" className="error">Server received incorrect data!</label>
                 </div>
             </div>

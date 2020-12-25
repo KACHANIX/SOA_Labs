@@ -10,6 +10,7 @@ class DeleteOrganization extends Component {
     delete(e){
         document.getElementById("deleteError").style.display = "none";
         document.getElementById("deleteSuccess").style.display = "none";
+        document.getElementById("deleteErrorId").style.display = "none";
 
         var id = document.getElementById("idDelete").value;
         var parsedId = parseInt(id);
@@ -33,7 +34,7 @@ class DeleteOrganization extends Component {
                     document.getElementById("deleteErrorId").style.display = "none";
 
 
-                } else if (xhr.status == 422) {
+                } else if (xhr.status == 400) {
                     document.getElementById("deleteSuccess").style.display = "none";
                     document.getElementById("deleteError").style.display = "block";
                     document.getElementById("deleteErrorId").style.display = "none";

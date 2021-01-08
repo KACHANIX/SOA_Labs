@@ -39,10 +39,11 @@
     }
 </style>
 <script>
-    var fireAddress = "https://localhost:8445/unnamed/orgmanager/fire/all/";
-    var acquiseAddress = "https://localhost:8445/unnamed/orgmanager/acquise/";
+    var basicAddress ="https://localhost:8614/2/"
+    var fireAddress = basicAddress+"orgmanager/fire/all/";
+    var acquiseAddress = basicAddress+"orgmanager/acquise/";
 
-    function fire() { 
+    function fire() {
         document.getElementById("orgIncorrectError").style.display = "none";
         document.getElementById("orgNotFoundError").style.display = "none";
         document.getElementById("orgFireSuccess").style.display = "none";
@@ -56,7 +57,7 @@
         if (parsedId < 1) {
             document.getElementById("orgIncorrectError").style.display = "block";
             return;
-        } 
+        }
         var xhr = new XMLHttpRequest();
         var url = fireAddress + id;
         xhr.open("POST", url);
@@ -95,7 +96,7 @@
         }
 
         var xhr = new XMLHttpRequest();
-        var url = acquiseAddress+parsedAcquirerId+'/' + parsedAcquiredId;
+        var url = acquiseAddress + parsedAcquirerId + '/' + parsedAcquiredId;
         xhr.open("POST", url);
         xhr.onload = (e) => {
             if (xhr.readyState == 4) {
@@ -106,7 +107,7 @@
                     document.getElementById("acqNotFoundError").style.display = "block";
                 } else if (xhr.status == 404 && xhr.responseText != '') {
                     document.getElementById("acqIncorrectError").style.display = "block";
-                } else if (xhr.status == 400){
+                } else if (xhr.status == 400) {
                     document.getElementById("acqIncorrectError").style.display = "block";
                 }
             }

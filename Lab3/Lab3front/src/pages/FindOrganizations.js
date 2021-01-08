@@ -13,8 +13,17 @@ class FindOrganizations extends Component {
     }
 
     getById() {
+        document.getElementById("getIdIncorrectError").style.display = "none";
+        document.getElementById("getIdSuccess").style.display = "none";
+        document.getElementById("getIdError").style.display = "none";
+        document.getElementById("getIdErrorId").style.display = "none";
+
         var id = (document.getElementById("idGet").value);
 
+        if (id ==''){
+            document.getElementById("getIdIncorrectError").style.display = "block";
+            return;
+        }
 
         var parsedId = parseInt(id);
         if (isNaN(id)) {

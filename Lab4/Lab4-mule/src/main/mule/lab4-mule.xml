@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="fcbb8da3-e261-4fdc-8640-7ea190878b9e" >
+		<http:listener-connection host="localhost" port="8987" />
+	</http:listener-config>
+	<wsc:config name="Web_Service_Consumer_Config" doc:name="Web Service Consumer Config" doc:id="4a080886-9d20-4010-805a-4bd1c2d4a3dd" >
+		<wsc:connection wsdlLocation="http://localhost:8080/1/Service?wsdl" service="Service" port="ServicePort" address="http://localhost:8080/1/Service" >
+			<wsc:web-service-security actor="http://schemas.xmlsoap.org/soap/actor/next" />
+		</wsc:connection>
+	</wsc:config>
+	<flow name="average-turnover" doc:id="96ce250d-b9f6-4d24-9bc4-facbfbdb8812" >
+		<http:listener doc:name="Listener" doc:id="7692aa33-f20b-475c-aefd-8b590cebc2d7" config-ref="HTTP_Listener_config" path="/average-turnover" allowedMethods="GET"/>
+		<wsc:consume operation="getAverage" doc:name="Consume" doc:id="3fbca7fa-bc88-45bf-a7ee-6656450384c2" config-ref="Web_Service_Consumer_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="a0a8c779-c07c-4cfd-9f7c-78bba01d4f4c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	AnnualTurnover: payload.body.getAverageResponse.return
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="Count-higher" doc:id="0aa4ca78-fafd-459b-9158-d6c0305493bd">
+		<http:listener doc:name="Listener" doc:id="46d4715c-f4fb-4be1-a123-f2bd3301cde7" config-ref="HTTP_Listener_config" path="/higher-turnovers/{turnover}" allowedMethods="GET" />
+		<set-variable value="#[attributes.uriParams.turnover]" doc:name="Set Variable" doc:id="670b6889-ee6a-4683-90fb-f5d7d645a721" variableName="turnover" />
+		<ee:transform doc:name="Transform Message" doc:id="ac8f2cdc-c351-4256-b71b-cff8e2ad912a">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://Default/
+---
+{
+	ns0#getHigherTurnovers: {
+		arg0: vars.turnover
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume doc:name="Consume" doc:id="61a3a8ef-909e-4d34-af26-9cf68d5fb86f" config-ref="Web_Service_Consumer_Config" operation="getHigherTurnovers" />
+		<ee:transform doc:name="Transform Message" doc:id="f39a42e5-aa3d-4214-97cb-099700e9159e">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Count: payload.body.getHigherTurnoversResponse.return
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="delete-annual" doc:id="39be237e-107e-4d21-9d5d-1d2636248c3b">
+		<http:listener doc:name="Listener" doc:id="becb23bd-56b8-47dc-9ed8-1016e33a71c8" config-ref="HTTP_Listener_config" path="/annual-turnover/{turnover}" allowedMethods="GET" />
+		<set-variable value="#[attributes.uriParams.turnover]" doc:name="Set Variable" doc:id="f958a7fd-e61a-46c1-87c3-5b33097c843f" variableName="turnover" />
+		<ee:transform doc:name="Transform Message" doc:id="bdae96c6-f832-4a78-9e7d-3efa3c73c139">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://Default/
+---
+{
+	ns0#deleteEqualTurnover: {
+		arg0: vars.turnover
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume operation="deleteEqualTurnover" doc:name="Consume" doc:id="e485a09d-bf2c-47dd-a7e4-054b4b6e1da0" config-ref="Web_Service_Consumer_Config" />
+	</flow>
+	<flow name="get-organizations" doc:id="ad1488c1-adfa-4902-8c22-0c784e40083d" >
+		<http:listener doc:name="Listener" doc:id="f24d6e3d-a15e-4152-b904-3a3735988a81" config-ref="HTTP_Listener_config" path="/organizations?sortBy={sortBy}&amp;filterBy={filterBy}&amp;page={page}"/>
+		<ee:transform doc:name="Transform Message" doc:id="b63da195-5318-4421-a395-eff6100459c9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://Default/
+---
+{
+	ns0#getOrganizations: {
+		(arg0: attributes.queryParams.sortBy) if (attributes.queryParams.sortBy != null),
+		(arg1: attributes.queryParams.filterBy) if (attributes.queryParams.filterBy !=null),
+		(arg2: attributes.queryParams.page) if (attributes.queryParams.page != null)
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume operation="getOrganizations" doc:name="Consume" doc:id="39e5ed8e-5d89-49bc-8bfb-5441cb69c890" config-ref="Web_Service_Consumer_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="c16c35bf-9df3-4313-befc-7e5057637dc9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.body.getOrganizationsResponse.*return map{
+	id: $.id,
+	name: $.name,
+	annualTurnover: $.annualTurnover,
+	coordinates: {
+		x: $.coordinates.x,
+		y: $.coordinates.y
+	},
+	postalAddress: {
+		street: $.postalAddress.street
+	},
+	creationDate: $.creationDate,
+	"type": $."type",
+	employees: $.employees
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="get-by-id" doc:id="099cb8e2-7337-414b-8319-0ca7afde9dd2" >
+		<http:listener doc:name="Listener" doc:id="0cff2293-d61b-4b73-a762-d694944b80d9" config-ref="HTTP_Listener_config" path="/id/{id}" allowedMethods="GET"/>
+		<set-variable value="#[attributes.uriParams.id]" doc:name="Set Variable" doc:id="a6b96a49-fd21-4099-88ca-521d43be87ba" variableName="id"/>
+		<ee:transform doc:name="Transform Message" doc:id="e2853ec2-3362-4632-88d5-7fff059b6ea4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://Default/
+---
+{
+	ns0#getById: {
+		arg0: vars.id
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume operation="getById" doc:name="Consume" doc:id="f2e02d39-d122-452b-9de1-e481801be6c4" config-ref="Web_Service_Consumer_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="4402239b-0a86-4d88-abef-e9f31222c436" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	id: payload.body.getByIdResponse.return.id,
+	name: payload.body.getByIdResponse.return.name,
+	annualTurnover: payload.body.getByIdResponse.return.annualTurnover,
+	coordinates: {
+		x: payload.body.getByIdResponse.return.coordinates.x,
+		y: payload.body.getByIdResponse.return.coordinates.y
+	},
+	postalAddress: {
+		street: payload.body.getByIdResponse.return.postalAddress.street
+	},
+	creationDate: payload.body.getByIdResponse.return.creationDate,
+	"type": payload.body.getByIdResponse.return."type",
+	employees: payload.body.getByIdResponse.return.employees
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="delete-by-id" doc:id="82f641b0-3ead-4a34-806a-defdace9338a">
+		<http:listener doc:name="Listener" doc:id="78b07321-26cc-4471-9a4e-d7c452bcb0f8" config-ref="HTTP_Listener_config" path="/delete-id/{id}"/>
+		<set-variable value="#[attributes.uriParams.id]" doc:name="Set Variable" doc:id="bda27456-a802-4a85-8d8d-222deb99b1fc" variableName="id"/>
+		<ee:transform doc:name="Transform Message" doc:id="fd2ee16f-bfd2-44bb-8ace-d62ceaadff5f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://Default/
+---
+{
+	ns0#deleteById: {
+		arg0: vars.id
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume doc:name="Consume" doc:id="8832b19a-532c-4590-98b8-2e4a804b944c" config-ref="Web_Service_Consumer_Config" operation="deleteById"/>
+	</flow>
+	<flow name="add-organization" doc:id="b5e7434a-0e61-4a86-9888-a72d57792bfc" >
+		<http:listener doc:name="Listener" doc:id="3843f82c-584c-4188-8249-ccb459afe325" config-ref="HTTP_Listener_config" path="/add" allowedMethods="POST"/>
+		<ee:transform doc:name="Transform Message" doc:id="f9361cb8-dc7b-401a-bfd9-010435496381" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://Default/
+---
+{
+	ns0#addOrganization: {
+		arg0: {
+			name: payload.name,
+			turnover: payload.turnover,
+			y: payload.y,
+			x: payload.x,
+			(street: payload.street)if (payload.street != null),
+			("type": payload."type") if (payload."type" != null),
+			(employees: payload.employees)if (payload.employees != null)
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume operation="addOrganization" doc:name="Consume" doc:id="d0173731-85a9-45fb-9149-d666aeb87d25" config-ref="Web_Service_Consumer_Config"/>
+	</flow>
+	<flow name="update-organization" doc:id="d07fdace-2216-4984-842b-ae70d6021d93" >
+		<http:listener doc:name="Listener" doc:id="49e653bc-2a2c-4ff5-91b8-39d2c48ab862" config-ref="HTTP_Listener_config" path="/update/{id}" allowedMethods="POST"/>
+		<set-variable value="#[attributes.uriParams.id]" doc:name="Set Variable" doc:id="eced25ad-1299-480a-a0d6-f0d77b737a3c" variableName="id"/>
+		<ee:transform doc:name="Transform Message" doc:id="6d1753f5-9294-428e-b15b-cff9f7571fcd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://Default/
+---
+{
+	ns0#updateOrganization: {
+		arg0: vars.id,
+		arg1: {
+			name: payload.name,
+			turnover: payload.turnover,
+			y: payload.y,
+			x: payload.x, 
+			(street: payload.street)if (payload.street != null),
+			("type": payload."type") if (payload."type" != null),
+			(employees: payload.employees)if (payload.employees != null)
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume operation="updateOrganization" doc:name="Consume" doc:id="4f3075b8-cf9f-4c17-affc-5b7a7463f927" config-ref="Web_Service_Consumer_Config"/>
+	</flow>
+</mule>

@@ -1,0 +1,101 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "title": "The root schema",
+    "description": "The root schema comprises the entire JSON document.",
+    "default": {},
+    "examples": [
+        {
+            "name": "a",
+            "turnover": 1,
+            "y": 1,
+            "x": 1,
+            "street": null,
+            "type": null,
+            "employees": null
+        }
+    ],
+    "required": [
+        "name",
+        "turnover",
+        "y",
+        "x",
+        "street",
+        "type",
+        "employees"
+    ],
+    "properties": {
+        "name": {
+            "$id": "#/properties/name",
+            "type": ["string", "null"],
+            "title": "The name schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "a"
+            ]
+        },
+        "turnover": {
+            "$id": "#/properties/turnover",
+            "type": ["string", "null"],
+            "title": "The turnover schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                1
+            ]
+        },
+        "y": {
+            "$id": "#/properties/y",
+            "type": ["string", "null"],
+            "title": "The y schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                1
+            ]
+        },
+        "x": {
+            "$id": "#/properties/x",
+            "type": ["string", "null"],
+            "title": "The x schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+            "examples": [
+                1
+            ]
+        },
+        "street": {
+            "$id": "#/properties/street",
+            "type": ["string", "null"],
+            "title": "The street schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": null,
+            "examples": [
+                null
+            ]
+        },
+        "type": {
+            "$id": "#/properties/type",
+            "type": ["string", "null"],
+            "title": "The type schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": null,
+            "examples": [
+                null
+            ]
+        },
+        "employees": {
+            "$id": "#/properties/employees",
+            "type": ["string", "null"],
+            "title": "The employees schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": null,
+            "examples": [
+                null
+            ]
+        }
+    },
+    "additionalProperties": true
+}

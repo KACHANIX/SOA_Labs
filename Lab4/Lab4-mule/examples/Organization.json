@@ -1,0 +1,15 @@
+{
+	"id": 1,
+	"name":"a",
+	"annualTurnover":1,
+	"coordinates":{
+		"x":1,
+		"y":1
+	},
+	"postalAddress":{
+		"street":"a"
+	},
+	"creationDate":"a",
+	"type":1,
+	"employees":1
+}

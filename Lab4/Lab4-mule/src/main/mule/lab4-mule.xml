@@ -75,7 +75,7 @@ ns ns0 http://Default/
 		<wsc:consume operation="deleteEqualTurnover" doc:name="Consume" doc:id="e485a09d-bf2c-47dd-a7e4-054b4b6e1da0" config-ref="Web_Service_Consumer_Config" />
 	</flow>
 	<flow name="get-organizations" doc:id="ad1488c1-adfa-4902-8c22-0c784e40083d" >
-		<http:listener doc:name="Listener" doc:id="f24d6e3d-a15e-4152-b904-3a3735988a81" config-ref="HTTP_Listener_config" path="/organizations?sortBy={sortBy}&amp;filterBy={filterBy}&amp;page={page}"/>
+		<http:listener doc:name="Listener" doc:id="f24d6e3d-a15e-4152-b904-3a3735988a81" config-ref="HTTP_Listener_config" path="/organizations?sortBy={sortBy}&amp;filterBy={filterBy}&amp;page={page}" allowedMethods="GET"/>
 		<ee:transform doc:name="Transform Message" doc:id="b63da195-5318-4421-a395-eff6100459c9" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -156,7 +156,7 @@ output application/json
 		</ee:transform>
 	</flow>
 	<flow name="delete-by-id" doc:id="82f641b0-3ead-4a34-806a-defdace9338a">
-		<http:listener doc:name="Listener" doc:id="78b07321-26cc-4471-9a4e-d7c452bcb0f8" config-ref="HTTP_Listener_config" path="/delete-id/{id}"/>
+		<http:listener doc:name="Listener" doc:id="78b07321-26cc-4471-9a4e-d7c452bcb0f8" config-ref="HTTP_Listener_config" path="/delete-id/{id}" allowedMethods="GET"/>
 		<set-variable value="#[attributes.uriParams.id]" doc:name="Set Variable" doc:id="bda27456-a802-4a85-8d8d-222deb99b1fc" variableName="id"/>
 		<ee:transform doc:name="Transform Message" doc:id="fd2ee16f-bfd2-44bb-8ace-d62ceaadff5f" >
 			<ee:message >

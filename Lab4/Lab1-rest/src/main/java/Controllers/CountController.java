@@ -20,7 +20,7 @@ public class CountController {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getHigherTurnovers(@QueryParam("turnover") String turnover) throws Exception {
+    public Response getHigherTurnovers(@QueryParam("turnover") double turnover) throws Exception {
         HttpURLConnection con = (HttpURLConnection) new URL(getMuleURL() + "higher-turnovers/" + turnover).openConnection();
         con.setRequestMethod("GET");
         con.connect();

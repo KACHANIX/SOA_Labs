@@ -1,0 +1,55 @@
+.App {
+    text-align: center;
+}
+
+a {
+    color: #4FC3F7;
+}
+
+div {
+    color: aliceblue;
+}
+
+#linksBlock {
+    margin-top: 20px;
+    display: inline-block;
+    font-size: 20px;
+}
+
+.link {
+    margin-left: 30px;
+}
+
+body {
+    margin: 0;
+    color: #f0f1f5;
+    background-color: #282c34;
+    font-size: 25px;
+}
+
+.error {
+    color: #ff1b55;
+    display: none;
+}
+
+.success {
+    color: #00ff28;
+    display: none;
+}
+
+input {
+    text-align: center;
+}
+
+.extraBlock {
+    padding-top: 10px;
+    margin: 10px auto auto;
+    width: 700px;
+    border: 5px solid #4FC3F7;
+    border-radius: 20px;
+    padding-bottom: 5px;
+    text-align: center;
+}
+#lab-2{
+    margin-top: 50px;
+}

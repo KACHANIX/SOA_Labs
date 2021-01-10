@@ -64,7 +64,7 @@ public class MainController {
         }
         responseMessage = IOUtils.toString(con.getInputStream());
 
-        if (responseMessage == null || responseMessage == "null") {
+        if (responseMessage == null || responseMessage.equals("null")) {
             return Response.ok("[]").build();
         }
         return Response.ok(responseMessage).build();

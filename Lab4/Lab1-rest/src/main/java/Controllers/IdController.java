@@ -20,7 +20,7 @@ public class IdController {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getById(@PathParam("id") String id) throws Exception {
+    public Response getById(@PathParam("id") int id) throws Exception {
         HttpURLConnection con = (HttpURLConnection) new URL(getMuleURL() + "id/" + id).openConnection();
         con.setRequestMethod("GET");
         con.connect();
@@ -43,7 +43,7 @@ public class IdController {
     }
 
     @DELETE
-    public Response deleteById(@PathParam("id") String id) throws Exception {
+    public Response deleteById(@PathParam("id") int id) throws Exception {
         HttpURLConnection con = (HttpURLConnection) new URL(getMuleURL() + "delete-id/" + id).openConnection();
         con.setRequestMethod("GET");
         con.connect();
@@ -66,7 +66,7 @@ public class IdController {
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response updateOrganization(@PathParam("id") String id, OrganizationModel organizationModel) throws Exception {
+    public Response updateOrganization(@PathParam("id") int id, OrganizationModel organizationModel) throws Exception {
         HttpURLConnection con = (HttpURLConnection) new URL(getMuleURL() + "update/" + id).openConnection();
         con.setRequestMethod("POST");
         con.setDoOutput(true);

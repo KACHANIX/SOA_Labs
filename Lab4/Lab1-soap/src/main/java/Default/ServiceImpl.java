@@ -90,7 +90,6 @@ public class ServiceImpl implements Service {
     @Override
     public void deleteById(int id) throws Exception {
         if (id < 1) {
-//            throw new SOAPExc
             throw new Exception("Bad request");
 //            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }

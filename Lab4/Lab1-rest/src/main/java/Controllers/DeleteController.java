@@ -17,7 +17,7 @@ public class DeleteController {
 
 
     @DELETE
-    public Response deleteEqualTurnover(@QueryParam("turnover") String turnover) throws Exception {
+    public Response deleteEqualTurnover(@QueryParam("turnover") double turnover) throws Exception {
         HttpURLConnection con = (HttpURLConnection) new URL(getMuleURL() + "annual-turnover/" + turnover).openConnection();
         con.setRequestMethod("GET");
         con.connect();
